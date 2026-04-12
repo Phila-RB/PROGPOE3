@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Prog
 {
@@ -38,8 +39,8 @@ namespace Prog
                 {
                   "what is safe browsing", new List<string>{
                   "Safe browsing is a combination of habits, tools, and practices designed to protect your personal information, digital identity, and devices from cyber threats like malware, phishing, and data theft while using the internet.",
-                  "Safe Browsing is a security service made by googl" +
-                  "e that protects user devices by warning them before they visit dangerous websites, download malicious software, or fall victim to phishing attacks. It scans the web to identify, warn, and protect users in real-time across Chrome, Android, and Gmail.",
+                  "Safe Browsing is a security service made by google" +
+                  "that protects user devices by warning them before they visit dangerous websites, download malicious software, or fall victim to phishing attacks. It scans the web to identify, warn, and protect users in real-time across Chrome, Android, and Gmail.",
                   "Safe browsing is a practice that we follow to ensure we stay safe on the internet and not expose ourselves to dangerous threats like malware and data theft."
                 } },
                 { "what can i ask about", new List<string>{ "You can ask about: what is\npassword safety\nphishing\nsafe browsing\nyour purpose" } },
@@ -50,29 +51,13 @@ namespace Prog
                   "My role is to help people understand the digital world so they can remain safe."
                 } },
             };
-            
 
-
+            ACSIIArt.ImageMaker(Properties.Resources.test2);
+            ACSIIArt.BorderMaker("Cyber Security Awareness Bot");
             welcome.Play();
             Thread.Sleep(8000);
 
-            var asciiChar = "@#i:,. ";
-            Bitmap img = new Bitmap(Properties.Resources.test2);
-
-            int div = img.Width / 40;
-            img = new Bitmap(img, new Size(img.Width / div, img.Height / div));
-            string m = "";
-            for (int i = 0; i < img.Height; i++)
-            {
-                for (int j = 0; j < img.Width; j++) {
-                    var pixel = img.GetPixel(j,i);
-                    var avg = (pixel.R + pixel.G + pixel.B) / 3;
-                    m += (asciiChar[avg * (asciiChar.Length-1) / 255]);
-                }
-                m += ('\n');
-            }
-            Console.WriteLine(m);
-
+            Console.WriteLine();
             Console.WriteLine("What is your name");
             TextToSpeech.Speak("What is your name");
 
@@ -81,16 +66,19 @@ namespace Prog
             {
                 Console.WriteLine("Hi friend Welcome to Cuber Help");
                 TextToSpeech.Speak("Hi friend Welcome to Cuber Help");
+                Console.WriteLine();
             }
             else
             {
-                Console.WriteLine("Hi " + name + " Welcome to Cuber Help");
-                TextToSpeech.Speak("Hi " + name + " Welcome to Cuber Help");
+                Console.WriteLine("Hi " + name + " Welcome to Cyber Help");
+                TextToSpeech.Speak("Hi " + name + " Welcome to Cyber Help");
+                Console.WriteLine();
             }
 
 
             Console.WriteLine("If your ever lost just ask: what can i ask about");
             TextToSpeech.Speak("If your ever lost just ask: what can i ask about");
+            Console.WriteLine();
 
             string q = Console.ReadLine().ToLower();
             Ask(q, dictionary);
@@ -109,6 +97,7 @@ namespace Prog
 
                 Console.WriteLine(listAns[choice]);
                 TextToSpeech.Speak(listAns[choice]);
+                Console.WriteLine();
 
                 string newQ = Console.ReadLine().ToLower();
                 Ask(newQ, list);
@@ -123,6 +112,7 @@ namespace Prog
                 {
                     Console.WriteLine("You just entered nothing, please ask an actaul question or ask: what can i ask about?");
                     TextToSpeech.Speak("You just entered nothing, please ask an actaul question or ask: what can i ask about?");
+                    Console.WriteLine();
                     newQ = Console.ReadLine().ToLower();
                     Ask(newQ, list);
                 }
@@ -130,17 +120,20 @@ namespace Prog
                 {
                     Console.WriteLine("Do you want to quit? Please confirm with Yes");
                     TextToSpeech.Speak("Do you want to quit? Please confirm with Yes");
+                    Console.WriteLine();
                     newQ = Console.ReadLine().ToLower();
                     if (newQ == "yes") 
                     { 
                         Console.WriteLine("You have been learning with Cyber Bot, GoodBye!");
                         TextToSpeech.Speak("You have been learning with Cyber Bot, GoodBye!");
+                        Console.WriteLine();
                         return;
                     }
                     else
                     {
                         Console.WriteLine("You didnt say yes, lets continue learning then! What do you want to know?");
                         TextToSpeech.Speak("You didnt say yes, lets continue learning then! What do you want to know?");
+                        Console.WriteLine();
                         newQ = Console.ReadLine().ToLower();
                         Ask(newQ, list);
                     }
@@ -149,6 +142,7 @@ namespace Prog
                 {
                     Console.WriteLine("Im sorry i dont know what you mean, could you please rephrase the question or ask:\nwhat can i ask about?");
                     TextToSpeech.Speak("Im sorry i dont know what you mean, could you please rephrase the question or ask:\nwhat can i ask about?");
+                    Console.WriteLine();
                     newQ = Console.ReadLine().ToLower();
                     Ask(newQ, list);
                 }

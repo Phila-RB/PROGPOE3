@@ -13,8 +13,6 @@ namespace Prog
         public static void Speak(string text)
         {
             ss.Speak(text);
-
-
         }
     }
 }
