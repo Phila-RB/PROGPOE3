@@ -18,6 +18,8 @@ namespace Prog
     {
         static void Main(string[] args)
         {
+            //Welcome audio and diction variable
+            //dictionary contains string for key and list of possible answers for values
             SoundPlayer welcome = new SoundPlayer(Properties.Resources.welcome_audio);
             Dictionary<string,List<string>> dictionary = new Dictionary<string, List<string>>()
             {
@@ -52,8 +54,11 @@ namespace Prog
                 } },
             };
 
+            //display App logo and name
             ACSIIArt.ImageMaker(Properties.Resources.logo);
             ACSIIArt.BorderMaker("Cyber Security Awareness Bot");
+
+            //play welcome audio and delay timer to not conflict audios
             welcome.Play();
             Thread.Sleep(8000);
 
@@ -61,6 +66,7 @@ namespace Prog
             Console.WriteLine("What is your name");
             TextToSpeech.Speak("What is your name");
 
+            //user name
             string name = Console.ReadLine();
             if (string.IsNullOrEmpty(name))
             {
@@ -88,7 +94,10 @@ namespace Prog
 
         }
 
+        //Ask Method
+        //This method lets the user communicate with the bot and ask questions
         public static void Ask(string question, Dictionary<string, List<string>> list){
+            //if question is valid bot will give random related answer 
             Random random = new Random();
             if (list.ContainsKey(question))
             {
@@ -104,14 +113,14 @@ namespace Prog
 
             }
 
+            //if quesiton is not valid go through series of if statements trying find/help user ask right questions
             if (!list.ContainsKey(question))
             {
-                
                 string newQ;
                 if (string.IsNullOrWhiteSpace(question))
                 {
-                    Console.WriteLine("You just entered nothing, please ask an actaul question or ask: what can i ask about?");
-                    TextToSpeech.Speak("You just entered nothing, please ask an actaul question or ask: what can i ask about?");
+                    Console.WriteLine("You just entered nothing, please ask an actual question or ask: what can i ask about");
+                    TextToSpeech.Speak("You just entered nothing, please ask an actual question or ask: what can i ask about");
                     Console.WriteLine();
                     newQ = Console.ReadLine().ToLower();
                     Ask(newQ, list);
