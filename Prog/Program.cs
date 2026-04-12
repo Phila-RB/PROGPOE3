@@ -56,18 +56,23 @@ namespace Prog
 
             //display App logo and name
             ACSIIArt.ImageMaker(Properties.Resources.logo);
+            Console.ForegroundColor = ConsoleColor.Green;
             ACSIIArt.BorderMaker("Cyber Security Awareness Bot");
+            Console.ResetColor();
 
             //play welcome audio and delay timer to not conflict audios
             welcome.Play();
             Thread.Sleep(8000);
 
             Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("What is your name");
             TextToSpeech.Speak("What is your name");
+            Console.ResetColor();
 
             //user name
             string name = Console.ReadLine();
+            Console.ForegroundColor = ConsoleColor.Green;
             if (string.IsNullOrEmpty(name))
             {
                 Console.WriteLine("Hi friend Welcome to Cuber Help");
@@ -85,10 +90,12 @@ namespace Prog
             Console.WriteLine("If your ever lost just ask: what can i ask about");
             TextToSpeech.Speak("If your ever lost just ask: what can i ask about");
             Console.WriteLine();
+            Console.ResetColor();
 
             string q = Console.ReadLine().ToLower();
             Ask(q, dictionary);
 
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("press any key to exit...");
             Console.ReadKey();
 
@@ -104,9 +111,11 @@ namespace Prog
                 List<string> listAns = list[question];
                 int choice = random.Next(listAns.Count());
 
+                Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine(listAns[choice]);
                 TextToSpeech.Speak(listAns[choice]);
                 Console.WriteLine();
+                Console.ResetColor();
 
                 string newQ = Console.ReadLine().ToLower();
                 Ask(newQ, list);
@@ -119,20 +128,25 @@ namespace Prog
                 string newQ;
                 if (string.IsNullOrWhiteSpace(question))
                 {
+                    Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("You just entered nothing, please ask an actual question or ask: what can i ask about");
                     TextToSpeech.Speak("You just entered nothing, please ask an actual question or ask: what can i ask about");
                     Console.WriteLine();
+                    Console.ResetColor();
                     newQ = Console.ReadLine().ToLower();
                     Ask(newQ, list);
                 }
                 else if(question == "quit")
                 {
+                    Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("Do you want to quit? Please confirm with Yes");
                     TextToSpeech.Speak("Do you want to quit? Please confirm with Yes");
                     Console.WriteLine();
+                    Console.ResetColor();
                     newQ = Console.ReadLine().ToLower();
                     if (newQ == "yes") 
-                    { 
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine("You have been learning with Cyber Bot, GoodBye!");
                         TextToSpeech.Speak("You have been learning with Cyber Bot, GoodBye!");
                         Console.WriteLine();
@@ -140,18 +154,22 @@ namespace Prog
                     }
                     else
                     {
+                        Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine("You didnt say yes, lets continue learning then! What do you want to know?");
                         TextToSpeech.Speak("You didnt say yes, lets continue learning then! What do you want to know?");
                         Console.WriteLine();
+                        Console.ResetColor();
                         newQ = Console.ReadLine().ToLower();
                         Ask(newQ, list);
                     }
                 }
                 else
                 {
+                    Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("Im sorry i dont know what you mean, could you please rephrase the question or ask:\nwhat can i ask about?");
                     TextToSpeech.Speak("Im sorry i dont know what you mean, could you please rephrase the question or ask:\nwhat can i ask about?");
                     Console.WriteLine();
+                    Console.ResetColor();
                     newQ = Console.ReadLine().ToLower();
                     Ask(newQ, list);
                 }

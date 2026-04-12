@@ -29,7 +29,9 @@ namespace Prog
                 }
                 m += ('\n');
             }
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(m);//display image
+            Console.ResetColor();   
         }
 
         //create border to fit any text
@@ -51,7 +53,9 @@ namespace Prog
                 }
                 i++;
             }
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(borderH);
+            Console.ResetColor();
         }
 
     }
