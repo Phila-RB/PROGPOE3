@@ -63,9 +63,9 @@ namespace Prog.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap test2 {
+        internal static System.Drawing.Bitmap logo {
             get {
-                object obj = ResourceManager.GetObject("test2", resourceCulture);
+                object obj = ResourceManager.GetObject("logo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -73,9 +73,9 @@ namespace Prog.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream welcome {
+        internal static System.IO.UnmanagedMemoryStream welcome_audio {
             get {
-                return ResourceManager.GetStream("welcome", resourceCulture);
+                return ResourceManager.GetStream("welcome_audio", resourceCulture);
             }
         }
     }

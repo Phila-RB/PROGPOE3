@@ -18,7 +18,7 @@ namespace Prog
     {
         static void Main(string[] args)
         {
-            SoundPlayer welcome = new SoundPlayer(Properties.Resources.welcome);
+            SoundPlayer welcome = new SoundPlayer(Properties.Resources.welcome_audio);
             Dictionary<string,List<string>> dictionary = new Dictionary<string, List<string>>()
             {
                 { "hello", new List<string>(){ "Hello how can I help","Hey how can i help", "yo how can i be of service" } },
@@ -52,7 +52,7 @@ namespace Prog
                 } },
             };
 
-            ACSIIArt.ImageMaker(Properties.Resources.test2);
+            ACSIIArt.ImageMaker(Properties.Resources.logo);
             ACSIIArt.BorderMaker("Cyber Security Awareness Bot");
             welcome.Play();
             Thread.Sleep(8000);
