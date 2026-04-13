@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ProgPoe.Properties {
+namespace Prog.Properties {
     using System;
     
     

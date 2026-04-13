@@ -1,5 +1,5 @@
-﻿using ProgPoe;
-using ProgPoe.Properties;
+﻿using Prog;
+using Prog.Properties;
 using System.Media;
 internal class Program
 {

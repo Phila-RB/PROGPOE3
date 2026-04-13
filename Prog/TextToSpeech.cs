@@ -1,6 +1,6 @@
 ﻿using System.Speech.Synthesis;
 
-namespace ProgPoe
+namespace Prog
 {
     internal class TextToSpeech
     {

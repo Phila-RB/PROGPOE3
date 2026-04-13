@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace ProgPoe
+namespace Prog
 {
     internal class ACSIIArt
     {
