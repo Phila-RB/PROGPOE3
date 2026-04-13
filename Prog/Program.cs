@@ -117,7 +117,7 @@ internal class Program
             string newQ;
             if (string.IsNullOrWhiteSpace(question))
             {
-                Console.ForegroundColor = ConsoleColor.Green;
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("You just entered nothing, please ask an actual question or ask: what can i ask about");
                 TextToSpeech.Speak("You just entered nothing, please ask an actual question or ask: what can i ask about");
                 Console.WriteLine();
@@ -127,7 +127,7 @@ internal class Program
             }
             else if (question == "quit")
             {
-                Console.ForegroundColor = ConsoleColor.Green;
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("Do you want to quit? Please confirm with Yes");
                 TextToSpeech.Speak("Do you want to quit? Please confirm with Yes");
                 Console.WriteLine();
@@ -154,7 +154,7 @@ internal class Program
             }
             else
             {
-                Console.ForegroundColor = ConsoleColor.Green;
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Im sorry i dont know what you mean, could you please rephrase the question or ask:\nwhat can i ask about?");
                 TextToSpeech.Speak("Im sorry i dont know what you mean, could you please rephrase the question or ask:\nwhat can i ask about?");
                 Console.WriteLine();
