@@ -1,7 +1,6 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 
-namespace Prog
+namespace ProgPoe
 {
     internal class ACSIIArt
     {
@@ -11,7 +10,7 @@ namespace Prog
             //characters to be used in art..values go from brightest to darkest
             var asciiChar = "@#i:,. ";
             Bitmap img = new Bitmap(image); //create bitmap instance from image
-
+       
             int div = img.Width / 40;
             img = new Bitmap(img, new Size(img.Width / div, img.Height / div));//new bitmap image size to cater to window size
             string m = "";
@@ -27,7 +26,7 @@ namespace Prog
             }
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(m);//display image
-            Console.ResetColor();   
+            Console.ResetColor();
         }
 
         //create border to fit any text
@@ -43,7 +42,7 @@ namespace Prog
             while (i < 6)
             {
                 Console.WriteLine(borderV + width + borderV);
-                if(i == 2)
+                if (i == 2)
                 {
                     Console.WriteLine(borderV + pad + text + pad + borderV);
                 }
