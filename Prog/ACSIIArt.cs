@@ -5,14 +5,14 @@ namespace Prog
     internal class ACSIIArt
     {
         //create acsii art withthis method
-        public static void ImageMaker(Image image)
+        public static string ImageMaker(Image image)
         {
             //characters to be used in art..values go from brightest to darkest
             var asciiChar = "@#i:,. ";
-            Bitmap img = new Bitmap(image); //create bitmap instance from image
+            Bitmap img = new(image); //create bitmap instance from image
        
             int div = img.Width / 40;
-            img = new Bitmap(img, new Size(img.Width / div, img.Height / div));//new bitmap image size to cater to window size
+            img = new(img, new Size(img.Width / div, img.Height / div));//new bitmap image size to cater to window size
             string m = "";
             for (int i = 0; i < img.Height; i++)
             {
@@ -24,33 +24,34 @@ namespace Prog
                 }
                 m += ('\n');
             }
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine(m);//display image
-            Console.ResetColor();
+            return m;//display image
         }
 
         //create border to fit any text
-        public static void BorderMaker(string text)
+        public static string BorderMaker(string text)
         {
-            string borderH = new string('-', 12 + text.Length + 2); //top and bottome of border
+            string borderH = new('-', 12 + text.Length + 2); //top and bottome of border
             string borderV = "|";//sides of broder
-            string pad = new string(' ', 6);//padding to text
-            string width = new string(' ', 12 + text.Length);
+            string pad = new(' ', 6);//padding to text
+            string width = new(' ', 12 + text.Length);
             int i = 0;
+            string border = "";
 
-            Console.WriteLine(borderH);
+            border += borderH + "\n";
             while (i < 6)
             {
-                Console.WriteLine(borderV + width + borderV);
                 if (i == 2)
                 {
-                    Console.WriteLine(borderV + pad + text + pad + borderV);
+                    border += borderV + pad + text + pad + borderV;
+                }
+                else
+                {
+                    border += borderV + width + borderV + "\n";
                 }
                 i++;
             }
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine(borderH);
-            Console.ResetColor();
+            border += borderH + "\n";
+            return border;
         }
 
     }

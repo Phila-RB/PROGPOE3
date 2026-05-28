@@ -1,13 +1,25 @@
 ﻿using Prog;
 using Prog.Properties;
 using System.Media;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Media;
+using Windows.System;
 internal class Program
 {
+    public string name = "";
+    [STAThread]
     static void Main(string[] args)
     {
         //Welcome audio and diction variable
-        //dictionary contains string for key and list of possible answers for values
-        SoundPlayer welcome = new SoundPlayer(Resources.welcome_audio);
+        //dictionary contains string for key and list of possible answers for value
+
+        Application app = new Application();
+        GUI frame = new();
+
+
+        SoundPlayer welcome = new(Resources.welcome_audio);
         Dictionary<string, List<string>> dictionary = new()
             {
                 { "hello", new List<string>(){ "Hello how can I help?","Hey how can i help!", "yo how can i be of service!?" } },
@@ -42,72 +54,85 @@ internal class Program
             };
 
         //display App logo and name
-        
-        ACSIIArt.ImageMaker(Resources.logo);
-        Console.ForegroundColor = ConsoleColor.Green;
-        ACSIIArt.BorderMaker("Cyber Security Awareness Bot");
-        Console.ResetColor();
-
-        //play welcome audio and delay timer to not conflict audios
-        welcome.Play();
-        Thread.Sleep(8000);
-
-        Console.WriteLine();
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("What is your name");
-        TextToSpeech.Speak("What is your name");
-        Console.ResetColor();
-
-        //user name
-        string name = Console.ReadLine();
-        Console.ForegroundColor = ConsoleColor.Green;
-        if (string.IsNullOrEmpty(name))
+        TextBlock artASCII = new()
         {
-            Console.WriteLine("Hi friend Welcome to Cuber Help");
-            TextToSpeech.Speak("Hi friend Welcome to Cuber Help");
-            Console.WriteLine();
-        }
-        else
+            Text = ACSIIArt.ImageMaker(Resources.logo),
+            FontFamily = new FontFamily("Consolas, Courier New, Lucida Console, Monospace")
+        };
+        artASCII.FontSize = 12;
+        artASCII.Margin = new Thickness(20);
+        artASCII.TextWrapping = TextWrapping.Wrap;
+
+        frame.msgView.Children.Add(artASCII);
+
+        TextBlock artBorder = new()
         {
-            Console.WriteLine("Hi " + name + " Welcome to Cyber Help");
-            TextToSpeech.Speak("Hi " + name + " Welcome to Cyber Help");
-            Console.WriteLine();
-        }
+            Text = ACSIIArt.BorderMaker("Cyber Security Awareness Bot"),
+            FontFamily = new FontFamily("Consolas, Courier New, Lucida Console, Monospace")
+        };
+        artBorder.FontSize = 12;
+        artBorder.Margin = new Thickness(20);
+        artBorder.TextWrapping = TextWrapping.Wrap;
+
+        frame.msgView.Children.Add(artBorder);
+        frame.Loaded += async (sender, args) =>
+        {
+            ////play welcome audio and delay timer to not conflict audios
+            await Task.Run(() =>
+            {
+                welcome.PlaySync();
+                BotSpeak("What is your name", frame);
+                //TextToSpeech.Speak("What is your name");
+
+            });
+            //Thread.Sleep(8000);//
+
+            string name = await frame.RunConversationAsync();
+         
 
 
-        Console.WriteLine("If your ever lost just ask: what can i ask about");
-        TextToSpeech.Speak("If your ever lost just ask: what can i ask about");
-        Console.WriteLine();
-        Console.ResetColor();
+            if (string.IsNullOrEmpty(name))
+            {
+                BotSpeak("Hi friend Welcome to Cuber Help", frame);
+                //TextToSpeech.Speak("Hi friend Welcome to Cuber Help");
+            }
+            else
+            {
+                BotSpeak("Hi " + name + " Welcome to Cyber Help", frame);
+                //TextToSpeech.Speak("Hi " + name + " Welcome to Cyber Help");
+            }
 
-        string q = Console.ReadLine().ToLower();
-        Ask(q, dictionary);
 
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("press any key to exit...");
-        Console.ReadKey();
+            BotSpeak("If your ever lost just ask: what can i ask about", frame);
+            //TextToSpeech.Speak("If your ever lost just ask: what can i ask about");
 
+            string que = await frame.RunConversationAsync();
+            Ask(que, dictionary, frame);
+
+            //Console.WriteLine("press any key to exit...");
+        };
+
+        app.Run(frame);
     }
 
     //Ask Method
     //This method lets the user communicate with the bot and ask questions
-    public static void Ask(string question, Dictionary<string, List<string>> list)
+    public static async void Ask(string question, Dictionary<string, List<string>> list, GUI frame)
     {
         //if question is valid bot will give random related answer 
-        Random random = new Random();
+        Random random = new();
+
         if (list.ContainsKey(question))
         {
             List<string> listAns = list[question];
+
             int choice = random.Next(listAns.Count());
 
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine(listAns[choice]);
-            TextToSpeech.Speak(listAns[choice]);
-            Console.WriteLine();
-            Console.ResetColor();
+            BotSpeak(listAns[choice], frame);
+            //TextToSpeech.Speak(listAns[choice]);
 
-            string newQ = Console.ReadLine().ToLower();
-            Ask(newQ, list);
+            string newQ = await frame.RunConversationAsync();
+            Ask(newQ, list, frame);
 
         }
 
@@ -117,51 +142,49 @@ internal class Program
             string newQ;
             if (string.IsNullOrWhiteSpace(question))
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("You just entered nothing, please ask an actual question or ask: what can i ask about");
-                TextToSpeech.Speak("You just entered nothing, please ask an actual question or ask: what can i ask about");
-                Console.WriteLine();
-                Console.ResetColor();
-                newQ = Console.ReadLine().ToLower();
-                Ask(newQ, list);
+                BotSpeak("You just entered nothing, please ask an actual question or ask: what can i ask about", frame);
+                newQ = await frame.RunConversationAsync();
+                Ask(newQ, list, frame);
             }
             else if (question == "quit")
             {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("Do you want to quit? Please confirm with Yes");
-                TextToSpeech.Speak("Do you want to quit? Please confirm with Yes");
-                Console.WriteLine();
-                Console.ResetColor();
-                newQ = Console.ReadLine().ToLower();
+                BotSpeak("Do you want to quit? Please confirm with Yes", frame);
+                newQ = await frame.RunConversationAsync(); 
                 if (newQ == "yes")
                 {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("You have been learning with Cyber Bot, GoodBye!");
-                    TextToSpeech.Speak("You have been learning with Cyber Bot, GoodBye!");
-                    Console.WriteLine();
+                    BotSpeak("You have been learning with Cyber Bot, GoodBye!", frame);
                     return;
                 }
                 else
                 {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("You didnt say yes, lets continue learning then! What do you want to know?");
-                    TextToSpeech.Speak("You didnt say yes, lets continue learning then! What do you want to know?");
-                    Console.WriteLine();
-                    Console.ResetColor();
-                    newQ = Console.ReadLine().ToLower();
-                    Ask(newQ, list);
+                    BotSpeak("You didnt say yes, lets continue learning then! What do you want to know?", frame);
+                    newQ = await frame.RunConversationAsync();
+                    Ask(newQ, list, frame);
                 }
             }
             else
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Im sorry i dont know what you mean, could you please rephrase the question or ask:\nwhat can i ask about?");
-                TextToSpeech.Speak("Im sorry i dont know what you mean, could you please rephrase the question or ask:\nwhat can i ask about?");
-                Console.WriteLine();
-                Console.ResetColor();
-                newQ = Console.ReadLine().ToLower();
-                Ask(newQ, list);
+                BotSpeak("Im sorry i dont know what you mean, could you please rephrase the question or ask:\nwhat can i ask about?", frame);
+                newQ = await frame.RunConversationAsync();
+                Ask(newQ, list, frame);
             }
         }
+    }
+
+    public static void BotSpeak(string text, GUI frame)
+    {
+        frame.Dispatcher.Invoke(() =>
+        {
+            TextBlock botMsg = new();
+            botMsg.Inlines.Add(new Run("Bot: ")
+            {
+                Foreground = Brushes.Green
+            });
+            botMsg.Inlines.Add(new Run(text));
+            botMsg.Margin = new Thickness(20);
+            botMsg.TextWrapping = TextWrapping.Wrap;
+            frame.msgView.Children.Add(botMsg);
+            TextToSpeech.Speak(text);
+        });
     }
 }
