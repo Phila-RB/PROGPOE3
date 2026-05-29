@@ -1,6 +1,7 @@
 ﻿using Prog;
 using Prog.Properties;
 using System.Media;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -44,7 +45,7 @@ internal class Program
                   "that protects user devices by warning them before they visit dangerous websites, download malicious software, or fall victim to phishing attacks. It scans the web to identify, warn, and protect users in real-time across Chrome, Android, and Gmail.",
                   "Safe browsing is a practice that we follow to ensure we stay safe on the internet and not expose ourselves to dangerous threats like malware and data theft."
                 } },
-                { "what can i ask about", new List<string>{ "You can ask about: what is\npassword safety\nphishing\nsafe browsing\nyour purpose" } },
+                { "what can i ask about", new List<string>{ "You can ask about: what is\npassword safety\nphishing\nsafe browsing\nyour purpose\n You can also tell me what your interested in by saying:\n im interested in blank\nor i like blank\n and i will remember it" } },
                 {
                   "what is your purpose", new List<string>{
                   "My purpose is to educate you on all matter of digital safety.",
@@ -52,6 +53,7 @@ internal class Program
                   "My role is to help people understand the digital world so they can remain safe."
                 } },
             };
+        List<string> userInterests = new() { };
 
         //display App logo and name
         TextBlock artASCII = new()
@@ -122,6 +124,7 @@ internal class Program
         Random random = new();
         string[] check = { "phishing", "password", "scam", "privacy", "browsing" };
         string[] knowMore = { "tell me more", "give me another tip", "elaborate", "expound" };
+        string[] rem = { "interested in", "i like"};
 
         if (list.ContainsKey(question))
         {
@@ -139,6 +142,41 @@ internal class Program
             }
             Ask(newQ, list, frame);
 
+        }
+        else if (rem.Any(m => question.Contains(m)))//remember topic liked
+        {
+
+            if(check.Any(m => question.Contains(m))){
+                
+                string search = check.FirstOrDefault(m => question.Contains(m));
+                BotSpeak("That is super cool! I will remember that. Heres a cool fact I know about " + search, frame);
+                foreach (string match in list.Keys)
+                {
+                        if (match.Contains(search))
+                        {
+                            List<string> listAns = list[match];
+
+                            int choice = random.Next(listAns.Count());
+
+                            BotSpeak(listAns[choice], frame);
+                            //TextToSpeech.Speak(listAns[choice]);
+
+                            string newq = await frame.RunConversationAsync();
+                            Ask(newq, list, frame);
+                        }
+                }
+            }
+            else
+            {
+                BotSpeak("That is super cool! I will remember that.", frame);
+            }
+
+            string newQ = await frame.RunConversationAsync();
+            if (knowMore.Any(m => newQ.Contains(m)))
+            {
+                Ask(question, list, frame);
+            }
+            Ask(newQ, list, frame);
         }
         else
         {
@@ -161,7 +199,6 @@ internal class Program
                                 Ask(question, list, frame);
                             }
                             Ask(newQ, list, frame);
-                            return;
                         }
                     
                 }
