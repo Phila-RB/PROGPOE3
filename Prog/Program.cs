@@ -118,7 +118,7 @@ internal class Program
         string[] rem = { "interested in", "i like"};
         string[] senti = { "worried", "frustrated", "scared" };
 
-        if (list.ContainsKey(question))
+        if (list.ContainsKey(question))//answers direct questions
         {
             List<string> listAns = list[question];
             int desc = random.Next(comfortText.Count());
@@ -132,7 +132,7 @@ internal class Program
             Ask(newQ, list, frame);
 
         }
-        else if (rem.Any(m => question.Contains(m)))//remember topic liked
+        else if (rem.Any(m => question.Contains(m)))//remember topics liked
         {
             if(check.Any(m => question.Contains(m))){
                 string search = check.FirstOrDefault(m => question.Contains(m));
@@ -163,7 +163,7 @@ internal class Program
             }
             Ask(newQ, list, frame);
         }
-        else
+        else //answers with comfort text and keywords
         {
             if(check.Any(m => question.Contains(m))){
                 if (senti.Any(m => question.Contains(m)))
@@ -244,7 +244,7 @@ internal class Program
     {
         frame.Dispatcher.Invoke(() =>
         {
-            TextBlock botMsg = new();
+            TextBlock botMsg = new(); // create text block
             botMsg.Inlines.Add(new Run("Bot: ")
             {
                 Foreground = Brushes.Green
@@ -252,7 +252,7 @@ internal class Program
             botMsg.Inlines.Add(new Run(text));
             botMsg.Margin = new Thickness(10);
             botMsg.TextWrapping = TextWrapping.Wrap;
-            frame.msgView.Children.Add(botMsg);
+            frame.msgView.Children.Add(botMsg); //adds text block to stack panel
             TextToSpeech.Speak(text);
         });
     }
