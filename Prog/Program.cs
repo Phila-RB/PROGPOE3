@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 using Windows.System;
+
 internal class Program
 {
     public static string name = "";
