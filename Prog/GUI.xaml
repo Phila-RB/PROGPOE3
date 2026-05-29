@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Prog"
         mc:Ignorable="d"
-        Title="GUI" Height="800" Width="1200">
+        Title="GUI" Height="700" Width="1200">
     <!--grid 1-->
     <Grid Background="Black">
         <Grid.ColumnDefinitions>
@@ -16,7 +16,7 @@
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition/>
-                <RowDefinition Height="150"/>
+                <RowDefinition Height="100"/>
             </Grid.RowDefinitions>
             <ScrollViewer Grid.Row="0">
                 <StackPanel x:Name="msgView" Background="WhiteSmoke" CanVerticallyScroll="True">
