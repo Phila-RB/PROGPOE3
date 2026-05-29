@@ -32,5 +32,9 @@
                 <Button Name="sendBut" Content="Send" Grid.Column="1" Height="30" VerticalAlignment="Top" Margin="20" FontSize="20" FontWeight="Bold" Click="Button_Click"></Button>
             </Grid>
         </Grid>
+        <StackPanel Orientation="Vertical">
+            <Label Content="CYBER" Foreground="White" FontSize="40" HorizontalAlignment="Center"></Label>
+            <Label Content="HELP" Foreground="White" FontSize="40" HorizontalAlignment="Center"></Label>
+        </StackPanel>
     </Grid>
 </Window>

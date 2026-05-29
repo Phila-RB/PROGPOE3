@@ -11,6 +11,7 @@ using Windows.System;
 internal class Program
 {
     public static string name = "";
+    //dictionary contains string for key and list of possible answers for value
     public static Dictionary<string, List<string>> dictionary = new()
             {
                 { "hello", new List<string>(){ "Hello how can I help?","Hey how can i help!", "yo how can i be of service!?" } },
@@ -48,13 +49,10 @@ internal class Program
     [STAThread]
     static void Main(string[] args)
     {
-        //Welcome audio and diction variable
-        //dictionary contains string for key and list of possible answers for value
-
         Application app = new Application();
         GUI frame = new();
 
-
+        //Welcome audio and diction variable
         SoundPlayer welcome = new(Resources.welcome_audio);
 
         //display App logo and name
@@ -84,35 +82,26 @@ internal class Program
             ////play welcome audio and delay timer to not conflict audios
             await Task.Run(() =>
             {
-                //welcome.PlaySync();
-                //BotSpeak("What is your name", frame);
+                welcome.PlaySync();
+                BotSpeak("What is your name", frame);
 
             });
-            //Thread.Sleep(8000);//
 
             string name = await frame.RunConversationAsync();
-         
 
-
-            //if (string.IsNullOrEmpty(name))
-            //{
-            //    BotSpeak("Hi friend Welcome to Cuber Help", frame);
-            //    //TextToSpeech.Speak("Hi friend Welcome to Cuber Help");
-            //}
-            //else
-            //{
-            //    BotSpeak("Hi " + name + " Welcome to Cyber Help", frame);
-            //    //TextToSpeech.Speak("Hi " + name + " Welcome to Cyber Help");
-            //}
-
+            if (string.IsNullOrEmpty(name))
+            {
+                BotSpeak("Hi friend Welcome to Cuber Help", frame);
+            }
+            else
+            {
+                BotSpeak("Hi " + name + " Welcome to Cyber Help", frame);
+            }
 
             BotSpeak("If your ever lost just ask: what can i ask about", frame);
-            //TextToSpeech.Speak("If your ever lost just ask: what can i ask about");
 
             string que = await frame.RunConversationAsync();
             Ask(que, dictionary, frame);
-
-            //Console.WriteLine("press any key to exit...");
         };
 
         app.Run(frame);
@@ -132,13 +121,9 @@ internal class Program
         if (list.ContainsKey(question))
         {
             List<string> listAns = list[question];
-
-
             int desc = random.Next(comfortText.Count());
 
             BotSpeak(listAns[desc], frame);
-            //TextToSpeech.Speak(listAns[choice]);
-
            
             string newQ = await frame.RunConversationAsync();
             if (knowMore.Any(m => newQ.Contains(m))){
@@ -149,25 +134,21 @@ internal class Program
         }
         else if (rem.Any(m => question.Contains(m)))//remember topic liked
         {
-
             if(check.Any(m => question.Contains(m))){
-                
                 string search = check.FirstOrDefault(m => question.Contains(m));
                 BotSpeak("That is super cool! I will remember that. Heres a cool fact I know about " + search, frame);
                 foreach (string match in list.Keys)
                 {
-                        if (match.Contains(search))
-                        {
-                            List<string> listAns = list[match];
+                    if (match.Contains(search))
+                    {
+                        List<string> listAns = list[match];
+                        int choice = random.Next(listAns.Count());
 
-                            int choice = random.Next(listAns.Count());
+                        BotSpeak(listAns[choice], frame);
 
-                            BotSpeak(listAns[choice], frame);
-                            //TextToSpeech.Speak(listAns[choice]);
-
-                            string newq = await frame.RunConversationAsync();
-                            Ask(newq, list, frame);
-                        }
+                        string newq = await frame.RunConversationAsync();
+                        Ask(newq, list, frame);
+                    }
                 }
             }
             else
@@ -202,22 +183,21 @@ internal class Program
                 string search = check.FirstOrDefault(m => question.Contains(m));
                 foreach (string match in list.Keys)
                 {
-                        if (match.Contains(search))
+                    if (match.Contains(search))
+                    {
+                        List<string> listAns = list[match];
+
+                        int choice = random.Next(listAns.Count());
+
+                        BotSpeak(listAns[choice], frame);
+
+                        string newQ = await frame.RunConversationAsync();
+                        if (knowMore.Any(m => newQ.Contains(m)))
                         {
-                            List<string> listAns = list[match];
-
-                            int choice = random.Next(listAns.Count());
-
-                            BotSpeak(listAns[choice], frame);
-                            //TextToSpeech.Speak(listAns[choice]);
-
-                            string newQ = await frame.RunConversationAsync();
-                            if (knowMore.Any(m => newQ.Contains(m)))
-                            {
-                                Ask(question, list, frame);
-                            }
-                            Ask(newQ, list, frame);
+                            Ask(question, list, frame);
                         }
+                        Ask(newQ, list, frame);
+                    }
                     
                 }
             }
@@ -270,7 +250,7 @@ internal class Program
                 Foreground = Brushes.Green
             });
             botMsg.Inlines.Add(new Run(text));
-            botMsg.Margin = new Thickness(20);
+            botMsg.Margin = new Thickness(10);
             botMsg.TextWrapping = TextWrapping.Wrap;
             frame.msgView.Children.Add(botMsg);
             TextToSpeech.Speak(text);
