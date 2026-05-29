@@ -1,6 +1,7 @@
 ﻿using Prog;
 using Prog.Properties;
 using System.Media;
+using System.Speech.Recognition;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,19 +10,8 @@ using System.Windows.Media;
 using Windows.System;
 internal class Program
 {
-    public string name = "";
-    [STAThread]
-    static void Main(string[] args)
-    {
-        //Welcome audio and diction variable
-        //dictionary contains string for key and list of possible answers for value
-
-        Application app = new Application();
-        GUI frame = new();
-
-
-        SoundPlayer welcome = new(Resources.welcome_audio);
-        Dictionary<string, List<string>> dictionary = new()
+    public static string name = "";
+    public static Dictionary<string, List<string>> dictionary = new()
             {
                 { "hello", new List<string>(){ "Hello how can I help?","Hey how can i help!", "yo how can i be of service!?" } },
                 { "hi", new List<string>(){ "Hello how can I help","Hey how can i help", "yo how can i be of service" } },
@@ -53,7 +43,19 @@ internal class Program
                   "My role is to help people understand the digital world so they can remain safe."
                 } },
             };
-        List<string> userInterests = new() { };
+    public static List<string> userInterests = new() { };
+    public static List<string> comfortText = new() { "im sorry i know how frustrating", "its ok to be worried about", "dont stress about it ill teach you tips so you can stay safe." };
+    [STAThread]
+    static void Main(string[] args)
+    {
+        //Welcome audio and diction variable
+        //dictionary contains string for key and list of possible answers for value
+
+        Application app = new Application();
+        GUI frame = new();
+
+
+        SoundPlayer welcome = new(Resources.welcome_audio);
 
         //display App logo and name
         TextBlock artASCII = new()
@@ -125,14 +127,16 @@ internal class Program
         string[] check = { "phishing", "password", "scam", "privacy", "browsing" };
         string[] knowMore = { "tell me more", "give me another tip", "elaborate", "expound" };
         string[] rem = { "interested in", "i like"};
+        string[] senti = { "worried", "frustrated", "scared" };
 
         if (list.ContainsKey(question))
         {
             List<string> listAns = list[question];
 
-            int choice = random.Next(listAns.Count());
 
-            BotSpeak(listAns[choice], frame);
+            int desc = random.Next(comfortText.Count());
+
+            BotSpeak(listAns[desc], frame);
             //TextToSpeech.Speak(listAns[choice]);
 
            
@@ -181,6 +185,20 @@ internal class Program
         else
         {
             if(check.Any(m => question.Contains(m))){
+                if (senti.Any(m => question.Contains(m)))
+                {
+                    string searchA = check.FirstOrDefault(m => question.Contains(m));
+                    int choice = 2;
+
+                    if (choice == 2)
+                    {
+                        BotSpeak(comfortText[choice] + " " + searchA + " can be", frame);
+                    }
+                    else
+                    {
+                        BotSpeak(comfortText[choice] + " " + searchA + " can be", frame);
+                    }
+                }
                 string search = check.FirstOrDefault(m => question.Contains(m));
                 foreach (string match in list.Keys)
                 {
