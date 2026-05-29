@@ -80,9 +80,8 @@ internal class Program
             ////play welcome audio and delay timer to not conflict audios
             await Task.Run(() =>
             {
-                welcome.PlaySync();
-                BotSpeak("What is your name", frame);
-                //TextToSpeech.Speak("What is your name");
+                //welcome.PlaySync();
+                //BotSpeak("What is your name", frame);
 
             });
             //Thread.Sleep(8000);//
@@ -91,16 +90,16 @@ internal class Program
          
 
 
-            if (string.IsNullOrEmpty(name))
-            {
-                BotSpeak("Hi friend Welcome to Cuber Help", frame);
-                //TextToSpeech.Speak("Hi friend Welcome to Cuber Help");
-            }
-            else
-            {
-                BotSpeak("Hi " + name + " Welcome to Cyber Help", frame);
-                //TextToSpeech.Speak("Hi " + name + " Welcome to Cyber Help");
-            }
+            //if (string.IsNullOrEmpty(name))
+            //{
+            //    BotSpeak("Hi friend Welcome to Cuber Help", frame);
+            //    //TextToSpeech.Speak("Hi friend Welcome to Cuber Help");
+            //}
+            //else
+            //{
+            //    BotSpeak("Hi " + name + " Welcome to Cyber Help", frame);
+            //    //TextToSpeech.Speak("Hi " + name + " Welcome to Cyber Help");
+            //}
 
 
             BotSpeak("If your ever lost just ask: what can i ask about", frame);
@@ -121,6 +120,8 @@ internal class Program
     {
         //if question is valid bot will give random related answer 
         Random random = new();
+        string[] check = { "phishing", "password", "scam", "privacy", "browsing" };
+        string[] knowMore = { "tell me more", "give me another tip", "elaborate", "expound" };
 
         if (list.ContainsKey(question))
         {
@@ -131,10 +132,43 @@ internal class Program
             BotSpeak(listAns[choice], frame);
             //TextToSpeech.Speak(listAns[choice]);
 
+           
             string newQ = await frame.RunConversationAsync();
+            if (knowMore.Any(m => newQ.Contains(m))){
+                Ask(question, list, frame);
+            }
             Ask(newQ, list, frame);
 
         }
+        else
+        {
+            if(check.Any(m => question.Contains(m))){
+                string search = check.FirstOrDefault(m => question.Contains(m));
+                foreach (string match in list.Keys)
+                {
+                        if (match.Contains(search))
+                        {
+                            List<string> listAns = list[match];
+
+                            int choice = random.Next(listAns.Count());
+
+                            BotSpeak(listAns[choice], frame);
+                            //TextToSpeech.Speak(listAns[choice]);
+
+                            string newQ = await frame.RunConversationAsync();
+                            if (knowMore.Any(m => newQ.Contains(m)))
+                            {
+                                Ask(question, list, frame);
+                            }
+                            Ask(newQ, list, frame);
+                            return;
+                        }
+                    
+                }
+            }
+
+        }
+
 
         //if quesiton is not valid go through series of if statements trying find/help user ask right questions
         if (!list.ContainsKey(question))
