@@ -362,7 +362,7 @@ internal class Program : MySqlClass
 
     private static async Task PlayGame(string question, GUI frame)
     {
-        if (question.Equals("play game"))
+        if (question.Equals("play") || question.Equals("game") || question.Equals("quiz"))
         {
             addLog("Started new game");
             int points = 0;
