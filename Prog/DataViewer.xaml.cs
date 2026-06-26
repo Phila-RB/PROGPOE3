@@ -20,29 +20,11 @@ namespace Prog
     {
         public DataViewer()
         {
-            InitializeComponent();
-            //DataTable dt = Program.ShowTasks();
+            InitializeComponent(); //create new data view window 
             UpdateView();
 
-            //foreach(DataColumn columns in dt.Columns)
-            //{
-            //    taskData.Columns.Add(new DataGridTextColumn
-            //    {
-            //        Header = columns.ColumnName,
-            //        Binding = new Binding(columns.ColumnName)
-            //    });
-            //}
-           
-            //foreach (DataRowView row in dt.DefaultView)
-            //{
-            //    taskData.Items.Add(row);
-            //}
-
         }
-
-    
-
-    public void UpdateView() {
+    public void UpdateView() {//update data grid with new data
             taskData.ItemsSource = Program.getData().DefaultView;
             DataGridTextColumn column = new();
 

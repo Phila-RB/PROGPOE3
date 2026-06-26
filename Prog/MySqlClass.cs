@@ -3,25 +3,23 @@ using System.Data;
 
 internal class MySqlClass
 {
+    //vars
     private static MySqlConnection sqlCon = new();
     private static MySqlCommand sqlCom = new();
     private static MySqlDataReader sqlRd;
     public static DataTable sqlDt = new();
-    private static string sqlQuery;
-    private static MySqlDataAdapter sqlDataAdap = new();
-    private static DataSet ds = new DataSet();
 
-
+    //connection string
     private static string connectionString =
     "server=localhost;" +
     "database=tasks;" +
     "uid=root;" +
     "pwd=1234567899;";
-    public static void AddNewTask(string title, string desc, DateOnly? remDate, TimeOnly? remTime)
+    public static void AddNewTask(string title, string desc, DateOnly? remDate, TimeOnly? remTime) //add new task to data base
     {
         sqlCom.Connection = sqlCon;
         string nl = "NULL";
-
+        //if date or time is null then there will be no value for them
         if (remDate == null && remTime == null)
         {
             sqlCom.CommandText = $"INSERT INTO task (Title, Description, ReminderDate, ReminderTime) VALUES ('{title}','{desc}',{nl},{nl})";
@@ -39,12 +37,12 @@ internal class MySqlClass
             sqlCom.CommandText = $"INSERT INTO task (Title, Description, ReminderDate, ReminderTime) VALUES ('{title}','{desc}','{remDate}','{remTime}')";
         }
 
-        sqlCom.ExecuteNonQuery();
+        sqlCom.ExecuteNonQuery(); //execute query
 
         ShowTasks();
     }
 
-    public static int DeleteTask(string iden)
+    public static int DeleteTask(string iden) //delete task
     {
         sqlCom.Connection = sqlCon;
         sqlCom.CommandText = $"DELETE FROM task WHERE {iden} LIMIT 1";
@@ -59,7 +57,7 @@ internal class MySqlClass
     {
         return sqlDt;
     }
-    public static void ShowTasks()
+    public static void ShowTasks() //select all tasks and store in datatable
     {
         sqlCom.Connection = sqlCon;
         sqlCom.CommandText = "SELECT * FROM task";
@@ -69,7 +67,7 @@ internal class MySqlClass
 
     }
 
-    public static int UpdateTaskStatus(string set, string iden)
+    public static int UpdateTaskStatus(string set, string iden) //update taks status
     {
         sqlCom.Connection = sqlCon;
         sqlCom.CommandText = $"UPDATE task SET Status = '{set}' WHERE {iden}";
@@ -79,12 +77,12 @@ internal class MySqlClass
         return aff;
     }
 
-    public static void openCon()
+    public static void openCon() //open database connection
     {
         sqlCon.ConnectionString = connectionString;
         sqlCon.Open();
     }
-    public static void closeCon()
+    public static void closeCon() //close database connection
     {
         sqlRd.Close();
         sqlCon.Close();
