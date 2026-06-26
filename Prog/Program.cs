@@ -19,7 +19,8 @@ internal class Program : MySqlClass
     public static string name = "";
     public static DataViewer viewFrame = new();
     public static Application app = new Application();
-    //dictionary contains string for key and list of possible answers for value
+
+    //quiz list
     public static new List<(string Question, string[] Correct, string[] Wrong, string isCorrect, string isWrong)> que = new List<(string Question, string[] Correct, string[] Wrong, string isCorrect, string isWrong)>
         {
             (
@@ -107,7 +108,8 @@ internal class Program : MySqlClass
                 "Thats incorrect, that is not a good practice and exposes you to threats"
             )
         };
-        public static Dictionary<string, List<string>> dictionary = new()
+    //dictionary contains string for key and list of possible answers for value
+    public static Dictionary<string, List<string>> dictionary = new()
             {
                 { "hello", new List<string>(){ "Hello how can I help?","Hey how can i help!", "yo how can i be of service!?" } },
                 { "hi", new List<string>(){ "Hello how can I help","Hey how can i help", "yo how can i be of service" } },
@@ -218,6 +220,7 @@ internal class Program : MySqlClass
         string[] rem = { "interested in", "i like" };
         string[] senti = { "worried", "frustrated", "scared" };
 
+        //view all actions done
         if(question.Contains("view logs") || question.Contains("view log"))
         {
             viewLog();
@@ -227,12 +230,14 @@ internal class Program : MySqlClass
             return;
         }
 
+        //play quiz game
         if (question.Contains("play") || question.Contains("game"))
         {
             await PlayGame(question, frame);
             return;
         }
        
+        //use database
         if(question.Contains("add") || question.Contains("new") || question.Contains("update") || question.Contains("delete") || question.Contains("view"))
         {
             await MySqlCrud(question, frame);
@@ -374,7 +379,7 @@ internal class Program : MySqlClass
         {
             addLog("Started new game");
             int points = 0;
-            foreach (var gameQ in que)
+            foreach (var gameQ in que)//loop through quiz answers and questions
             {
                 string q = gameQ.Question;
                 var rnd = new Random();
@@ -393,18 +398,19 @@ internal class Program : MySqlClass
                 BotSpeak(q, frame);
                 string ans = await frame.RunConversationAsync();
                 int m = options.IndexOf(gameQ.Correct[num]);
-                if (ans.Contains(gameQ.Correct[num].ToLower()) || ans.Equals(letters[m]))
+                if (ans.Contains(gameQ.Correct[num].ToLower()) || ans.Equals(letters[m]))//get correct answer
                 {
                     BotSpeak("That is correct", frame);
-                    BotSpeak(gameQ.isCorrect, frame);
-                    points++;
+                    BotSpeak(gameQ.isCorrect, frame);//display them
                 }
                 else
                 {
                     BotSpeak("That is incorrect", frame);
                     BotSpeak(gameQ.isWrong, frame);
                 }
+                points++;
             }
+            //based on score get praised
             if (points <= 3)
             {
                 BotSpeak($"your score is {points}/12. You need to learn more about cyber security =(", frame);
@@ -424,14 +430,15 @@ internal class Program : MySqlClass
             addLog($"Ended new game with score of {points}/12");
             BotSpeak("what would you like to do now?", frame);
             string ques = await frame.RunConversationAsync();
-            Ask(ques, dictionary, frame);
+            Ask(ques, dictionary, frame);//continue loop cycle
             return;
         }
     }
 
+    //myscql CRUD
     private static async Task MySqlCrud(string question, GUI frame)
     {
-        if (question.Contains("view tasks") || question.Contains("show tasks"))
+        if (question.Contains("view tasks") || question.Contains("show tasks"))//view all tasks
         {
             addLog("tasks viewed");
             ShowTasks();
@@ -452,7 +459,7 @@ internal class Program : MySqlClass
             Ask(que, dictionary, frame);
             return;
         }
-        else if (question.Contains("add") || question.Contains("new") || question.Contains("add task"))
+        else if (question.Contains("add") || question.Contains("new") || question.Contains("add task"))//add new task
         {
             BotSpeak("What is the title?",frame);
             string title = await frame.RunConversationAsync();
@@ -496,7 +503,7 @@ internal class Program : MySqlClass
             Ask(que, dictionary, frame);
             return;
         }
-        else if(question.Equals("update task") || question.Contains("update"))
+        else if(question.Equals("update task") || question.Contains("update"))//update task
         {
             BotSpeak("Please enter the ID or the Title of the task you want to update", frame);
             var identify = await frame.RunConversationAsync();
@@ -543,7 +550,7 @@ internal class Program : MySqlClass
             Ask(que, dictionary, frame);
             return;
         }
-        else if(question.Equals("delete task") || question.Contains("delete"))
+        else if(question.Equals("delete task") || question.Contains("delete"))//delete task
         {
             BotSpeak("Please enter the ID or the Title of the task you want to delete", frame);
             string del = await frame.RunConversationAsync();
@@ -629,7 +636,7 @@ internal class Program : MySqlClass
         });
     }
 
-    public static void viewLog()
+    public static void viewLog()//display logs of all actions done
     {
         addLog("viewed log");
         string l = "";
@@ -638,7 +645,7 @@ internal class Program : MySqlClass
             l += "time: " + key + "     Action:" + value.ToString();
         }
     }
-    public static void addLog(string action)
+    public static void addLog(string action)//add logs 
     {
         DateTime d = DateTime.Now;
         log.Add(d, action);
