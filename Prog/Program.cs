@@ -1,6 +1,11 @@
-﻿using Prog;
+﻿using MySql.Data;
+using MySql.Data.MySqlClient;
+using Org.BouncyCastle.Tls;
+using Prog;
 using Prog.Properties;
+using System.Data;
 using System.Media;
+using System.Security.Principal;
 using System.Speech.Recognition;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -8,12 +13,101 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 using Windows.System;
-
-internal class Program
+internal class Program : MySqlClass
 {
+
     public static string name = "";
+    public static DataViewer viewFrame = new();
+    public static Application app = new Application();
     //dictionary contains string for key and list of possible answers for value
-    public static Dictionary<string, List<string>> dictionary = new()
+    public static new List<(string Question, string[] Correct, string[] Wrong, string isCorrect, string isWrong)> que = new List<(string Question, string[] Correct, string[] Wrong, string isCorrect, string isWrong)>
+        {
+            (
+                "Which of the following are cybersecurity threats?",
+                new[] { "Phishing", "Ransomware", "Malware", "DDoS attack" },
+                new[] { "Firewall", "Encryption", "VPN", "Antivirus software" },
+                "Thats right, that is a type of attack",
+                "Thats incrrect that is a security feature"
+            ),
+            (
+                "Which are strong password practices?",
+                new[] { "Use symbols", "Use numbers", "Use uppercase letters", "Use long passwords" },
+                new[] { "Use your name", "Use '123456'", "Reuse passwords everywhere", "Write it on paper openly" },
+                "Thats right, adding that can make it harder for attackers to get your details",
+                "Thats incorrect, that will make it easier for attackers to get your passwords"
+            ),
+            (
+                "Which of these are types of malware?",
+                new[] { "Virus", "Trojan horse", "Worm", "Spyware" },
+                new[] { "Router", "Firewall", "VPN", "Encryption" },
+                "Thats right, that is a type of malware",
+                "Thats incorrect, that is a way to protect yourself from malware"
+            ),
+            (
+                "Which actions help protect against phishing?",
+                new[] { "Check sender email", "Avoid suspicious links", "Verify website URL", "Use email filters" },
+                new[] { "Click all links", "Share passwords", "Ignore security warnings", "Open unknown attachments" },
+                "Thats right, that will help sprotect you against phishing attacks",
+                "Thats incorrect, that will only make an attach more likely to happen"
+            ),
+            (
+                "Which are features of a firewall?",
+                new[] { "Blocks unauthorized access", "Monitors traffic", "Filters network data", "Enforces security rules" },
+                new[] { "Stores passwords", "Cleans viruses", "Increases RAM", "Generates WiFi signals" },
+                 "Thats right, that is not a firewall feature",
+                "Thats incorrect, that is a way to protect yourself from malware"
+            ),
+            (
+                "Which of these use encryption?",
+                new[] { "HTTPS websites", "VPN connections", "Online banking", "Secure messaging apps" },
+                new[] { "Open WiFi", "Plain text emails", "Unsecured websites", "Local text files" },
+                "Thats right, that uses encryption methods",
+                "Thats incorrect, that does not use encryption methods"
+            ),
+            (
+                "Which are examples of social engineering?",
+                new[] { "Phishing emails", "Pretexting", "Baiting attacks", "Impersonation calls" },
+                new[] { "Firewall setup", "Software updates", "Password hashing", "System backup" },
+                "Thats right, that is an example of social engineering",
+                "Thats incorrect, that is not a form of social engineering"
+            ),
+            (
+                "Which are benefits of using a VPN?",
+                new[] { "Hides IP address", "Encrypts traffic", "Protects public WiFi usage", "Improves privacy" },
+                new[] { "Removes viruses", "Increases CPU speed", "Deletes spam emails", "Repairs hardware" },
+                "Thats right, that is a benifit of a vpn",
+                "Thats incorrect, that is not a benifit of a vpn"
+            ),
+            (
+                "Which are signs of malware infection?",
+                new[] { "Slow performance", "Unexpected pop-ups", "Unknown programs installed", "Frequent crashes" },
+                new[] { "Faster internet", "Improved battery life", "Cleaner desktop", "More storage space" },
+                "Thats right, that is a malware infection",
+                "Thats incorrect, that is not an example of a malware infection"
+            ),
+            (
+                "Which practices improve cybersecurity?",
+                new[] { "Enable 2FA", "Update software regularly", "Use antivirus", "Backup data" },
+                new[] { "Disable updates", "Use weak passwords", "Share login details", "Ignore security alerts" },
+                                "Thats right, that practice does improve cyber security",
+                "Thats incorrect, that is not a practice to improve cyber security"
+            ),
+            (
+                "Which of the following are examples of authentication methods?",
+                new[] { "Password", "Fingerprint", "Facial recognition", "Security token" },
+                new[] { "Firewall", "Router", "VPN", "USB flash drive" },
+                        "Thats right, that is an example of an authentication method",
+                "Thats incorrect, that that is not an example of an authentication method"
+            ),
+            (
+                "Which is a good email security practice?",
+                new[] { "Verify the sender", "Scan attachments", "Use spam filters", "Avoid suspicious links" },
+                new[] { "Open every attachment", "Share your password", "Ignore security warnings", "Click unknown links" },
+                        "Thats right, that is good email security practices?",
+                "Thats incorrect, that is not a good practice and exposes you to threats"
+            )
+        };
+        public static Dictionary<string, List<string>> dictionary = new()
             {
                 { "hello", new List<string>(){ "Hello how can I help?","Hey how can i help!", "yo how can i be of service!?" } },
                 { "hi", new List<string>(){ "Hello how can I help","Hey how can i help", "yo how can i be of service" } },
@@ -32,12 +126,13 @@ internal class Program
                 } },
                 {
                   "what is safe browsing", new List<string>{
+
                   "Safe browsing is a combination of habits, tools, and practices designed to protect your personal information, digital identity, and devices from cyber threats like malware, phishing, and data theft while using the internet.",
                   "Safe Browsing is a security service made by google" +
                   "that protects user devices by warning them before they visit dangerous websites, download malicious software, or fall victim to phishing attacks. It scans the web to identify, warn, and protect users in real-time across Chrome, Android, and Gmail.",
                   "Safe browsing is a practice that we follow to ensure we stay safe on the internet and not expose ourselves to dangerous threats like malware and data theft."
                 } },
-                { "what can i ask about", new List<string>{ "You can ask about: what is\npassword safety\nphishing\nsafe browsing\nyour purpose\n You can also tell me what your interested in by saying:\n im interested in blank\nor i like blank\n and i will remember it" } },
+                { "what can i ask about", new List<string>{ "You can ask about: what is\npassword safety\nphishing\nsafe browsing\nyour purpose\nYou can also tell me what your interested in by saying:\nim interested in blank\nor i like blank\nand i will remember it\nyou can also play a quiz game but saying, play game, to test your cyber security knowledge\nor store tasks in the database by saying add task\nupdate task\ndelete task\nor view task to view all the tasks youve made." } },
                 {
                   "what is your purpose", new List<string>{
                   "My purpose is to educate you on all matter of digital safety.",
@@ -47,10 +142,12 @@ internal class Program
             };
     public static List<string> userInterests = new() { };
     public static List<string> comfortText = new() { "im sorry i know how frustrating", "its ok to be worried about", "dont stress about it ill teach you tips so you can stay safe." };
+
+    public static Dictionary<DateTime, string> log = new();
     [STAThread]
     static void Main(string[] args)
     {
-        Application app = new Application();
+        MySqlClass.openCon();
         GUI frame = new();
 
         //Welcome audio and diction variable
@@ -81,11 +178,11 @@ internal class Program
         frame.Loaded += async (sender, args) =>
         {
             ////play welcome audio and delay timer to not conflict audios
+
             await Task.Run(() =>
             {
                 welcome.PlaySync();
                 BotSpeak("What is your name", frame);
-
             });
 
             string name = await frame.RunConversationAsync();
@@ -102,10 +199,12 @@ internal class Program
             BotSpeak("If your ever lost just ask: what can i ask about", frame);
 
             string que = await frame.RunConversationAsync();
+            
             Ask(que, dictionary, frame);
         };
 
         app.Run(frame);
+
     }
 
     //Ask Method
@@ -116,18 +215,33 @@ internal class Program
         Random random = new();
         string[] check = { "phishing", "password", "scam", "privacy", "browsing" };
         string[] knowMore = { "tell me more", "give me another tip", "elaborate", "expound" };
-        string[] rem = { "interested in", "i like"};
+        string[] rem = { "interested in", "i like" };
         string[] senti = { "worried", "frustrated", "scared" };
+
+        if(question.Contains("play") || question.Contains("game"))
+        {
+            await PlayGame(question, frame);
+            return;
+        }
+       
+        if(question.Contains("add") || question.Contains("new") || question.Contains("update") || question.Contains("delete") || question.Contains("view"))
+        {
+            await MySqlCrud(question, frame);
+            return;
+        }
+   
 
         if (list.ContainsKey(question))//answers direct questions
         {
+            addLog("asked question");
             List<string> listAns = list[question];
-            int desc = random.Next(comfortText.Count());
+            int desc = random.Next(listAns.Count());
 
             BotSpeak(listAns[desc], frame);
-           
+
             string newQ = await frame.RunConversationAsync();
-            if (knowMore.Any(m => newQ.Contains(m))){
+            if (knowMore.Any(m => newQ.Contains(m)))
+            {
                 Ask(question, list, frame);
             }
             Ask(newQ, list, frame);
@@ -135,7 +249,9 @@ internal class Program
         }
         else if (rem.Any(m => question.Contains(m)))//remember topics liked
         {
-            if(check.Any(m => question.Contains(m))){
+            addLog("stored topic of interest");
+            if (check.Any(m => question.Contains(m)))
+            {
                 string search = check.FirstOrDefault(m => question.Contains(m));
                 BotSpeak("That is super cool! I will remember that. Heres a cool fact I know about " + search, frame);
                 foreach (string match in list.Keys)
@@ -166,7 +282,8 @@ internal class Program
         }
         else //answers with comfort text and keywords
         {
-            if(check.Any(m => question.Contains(m))){
+            if (check.Any(m => question.Contains(m)))
+            {
                 if (senti.Any(m => question.Contains(m)))
                 {
                     string searchA = check.FirstOrDefault(m => question.Contains(m));
@@ -199,7 +316,7 @@ internal class Program
                         }
                         Ask(newQ, list, frame);
                     }
-                    
+
                 }
             }
 
@@ -219,10 +336,12 @@ internal class Program
             else if (question == "quit")
             {
                 BotSpeak("Do you want to quit? Please confirm with Yes", frame);
-                newQ = await frame.RunConversationAsync(); 
+                newQ = await frame.RunConversationAsync();
                 if (newQ == "yes")
                 {
+                    addLog("Quit program");
                     BotSpeak("You have been learning with Cyber Bot, GoodBye!", frame);
+                    MySqlClass.closeCon();
                     return;
                 }
                 else
@@ -241,6 +360,245 @@ internal class Program
         }
     }
 
+    private static async Task PlayGame(string question, GUI frame)
+    {
+        if (question.Equals("play game"))
+        {
+            addLog("Started new game");
+            int points = 0;
+            foreach (var gameQ in que)
+            {
+                string q = gameQ.Question;
+                var rnd = new Random();
+                int num = rnd.Next(gameQ.Correct.Length);
+                string[] letters = { "a", "b", "c", "d" };
+                List<string> options = gameQ.Wrong
+                    .OrderBy(x => rnd.Next())   // Shuffle wrong answers
+                    .Take(3)                    // Take 3 random wrong ones
+                    .Append(gameQ.Correct[num]) // Add 1 correct answer
+                    .OrderBy(x => rnd.Next())   // Shuffle all 4 options
+                    .ToList();
+                q += "\na: " + options[0];
+                q += "\nb: " + options[1];
+                q += "\nc: " + options[2];
+                q += "\nd: " + options[3];
+                BotSpeak(q, frame);
+                string ans = await frame.RunConversationAsync();
+                int m = options.IndexOf(gameQ.Correct[num]);
+                if (ans.Contains(gameQ.Correct[num].ToLower()) || ans.Equals(letters[m]))
+                {
+                    BotSpeak("That is correct", frame);
+                    BotSpeak(gameQ.isCorrect, frame);
+                    points++;
+                }
+                else
+                {
+                    BotSpeak("That is incorrect", frame);
+                    BotSpeak(gameQ.isWrong, frame);
+                }
+            }
+            if (points <= 3)
+            {
+                BotSpeak($"your score is {points}/12. You need to learn more about cyber security =(", frame);
+            }
+            if (points >= 4 && points <= 6)
+            {
+                BotSpeak($"your score is {points}/12. That wasnt bad but you can do better =/, lets go learn more!", frame);
+            }
+            if (points >= 7 && points <= 9)
+            {
+                BotSpeak($"your score is {points}/12. That was awesome you basically a pro =), but still room for improvement!", frame);
+            }
+            if (points >= 10 && points <= 12)
+            {
+                BotSpeak($"your score is {points}/12. That was great your the best =D, Dont forget threats are always advancing so dont stop here!!", frame);
+            }
+            addLog($"Ended new game with score of {points}/12");
+        }
+    }
+
+    private static async Task MySqlCrud(string question, GUI frame)
+    {
+        if (question.Contains("view tasks"))
+        {
+            addLog("tasks viewed");
+            ShowTasks();
+            if (viewFrame != null && viewFrame.IsLoaded)
+            {
+                viewFrame.Activate();
+            }
+            else
+            {
+                // The window is either closed or was never opened. 
+                // Create a fresh instance to open it again.
+                viewFrame = new DataViewer();
+                viewFrame.Show(); //
+            }
+            viewFrame.Show();
+            BotSpeak("here is you tasks, what would you like to do now?",frame);
+            string que = await frame.RunConversationAsync();
+            Ask(que, dictionary, frame);
+            return;
+        }
+        else if (question.Contains("add task"))
+        {
+            BotSpeak("What is the title?",frame);
+            string title = await frame.RunConversationAsync();
+
+            while (String.IsNullOrEmpty(title))
+            {
+                BotSpeak("Please enter a title.", frame);
+                title = await frame.RunConversationAsync();
+            }
+
+            BotSpeak("What is the description?", frame);
+            string desc = await frame.RunConversationAsync();
+            while (String.IsNullOrEmpty(desc))
+            {
+                BotSpeak("Please enter the description.", frame);
+                desc = await frame.RunConversationAsync();
+            }
+
+            BotSpeak("what is the date in must be completed if you have one if not just skip?\nuse dd/mm/yyyy format.", frame);
+            string remDate = await frame.RunConversationAsync();
+            BotSpeak("What is the time it must be completed if you have one if not just skip?\nuse HH/MM format.", frame);
+            string remTime = await frame.RunConversationAsync();
+
+            DateOnly? dDate = null;
+            TimeOnly? tTime = null;
+
+            if (DateOnly.TryParse(remDate, out DateOnly parsedDate))
+            {
+                dDate = parsedDate;
+            }
+
+            if (TimeOnly.TryParse(remTime, out TimeOnly parsedTime))
+            {
+                tTime = parsedTime;
+            }
+            BotSpeak(remDate + "   " + remTime, frame);
+            AddNewTask(title, desc, dDate, tTime);
+            BotSpeak("Task successfully added!, what would you like to do now?", frame);
+            addLog("new task added");
+            string que = await frame.RunConversationAsync();
+            Ask(que, dictionary, frame);
+            return;
+        }
+        else if(question.Equals("update task"))
+        {
+            BotSpeak("Please enter the ID or the Title of the task you want to update", frame);
+            var identify = await frame.RunConversationAsync();
+
+            if (int.TryParse(identify.Trim(), out int id))
+            {
+                BotSpeak("How would you like to mark it?\nCompleted, Incomplete, Pending", frame);
+                string stat = await frame.RunConversationAsync();
+
+                int check = UpdateTaskStatus(stat, $"Id = {id}");
+                if (check > 0)
+                {
+                    BotSpeak("Update successful", frame);
+                    addLog("task updated");
+                }
+                else
+                {
+                    BotSpeak("Sorry i dont think that task exists, update failed", frame);
+                    addLog("task update failed");
+                }
+            }
+            else
+            {
+                string tit = identify;
+
+                BotSpeak("How would you like to mark it?\nCompleted, Incomplete, Pending", frame);
+                string stat = await frame.RunConversationAsync();
+
+                int check = UpdateTaskStatus(stat, $"Title = '{tit}'");
+                if (check > 0)
+                {
+                    BotSpeak("Update successful", frame);
+                    addLog("task updated");
+                }
+                else
+                {
+                    BotSpeak("Sorry i dont think that task exists, update failed", frame);
+                    addLog("task update failed");
+                }
+            }
+
+            BotSpeak("What would you like to do now?", frame);
+            string que = await frame.RunConversationAsync();
+            Ask(que, dictionary, frame);
+            return;
+        }
+        else if(question.Equals("delete task"))
+        {
+            BotSpeak("Please enter the ID or the Title of the task you want to delete", frame);
+            string del = await frame.RunConversationAsync();
+            try
+            {
+                int id = Int32.Parse(del);
+                BotSpeak("Are you sure you want to dolete this task Y/N", frame);
+                string ans= await frame.RunConversationAsync();
+                
+                if (ans.Equals("y") || ans.Equals("yes"))
+                {
+                    int check = DeleteTask( $"Id = {id}");
+                    if (check > 0)
+                    {
+                        BotSpeak("Deleted task successfully", frame);
+                        addLog("task deleted");
+                    }
+                    else
+                    {
+                        BotSpeak("Sorry i dont think that task exists, update failed", frame);
+                        addLog("task deletion failed");
+                    }
+
+                }
+                if (ans.Equals("n") || ans.Equals("no"))
+                {
+                    BotSpeak("Deletion aborted", frame);
+                }
+
+                BotSpeak("What would you like to do now?", frame);
+                string que = await frame.RunConversationAsync();
+                Ask(que, dictionary, frame);
+                return;
+            }
+            catch (Exception e)
+            {
+                string tit = del.ToString();
+                BotSpeak("Are you sure you want to delete this task Y/N", frame);
+                string ans = await frame.RunConversationAsync();
+
+                if (ans.Equals("y") || ans.Equals("yes"))
+                {
+                    int check = DeleteTask($"Title = '{tit}'");
+                    if (check > 0)
+                    {
+                        BotSpeak("Deleted task successfully", frame);
+                        addLog("task deleted");
+                    }
+                    else
+                    {
+                        BotSpeak("Sorry i dont think that task exists, update failed", frame);
+                        addLog("task deletion failed");
+                    }
+
+                }
+                if (ans.Equals("n") || ans.Equals("no"))
+                {
+                    BotSpeak("Deletion aborted", frame);
+                }
+                BotSpeak("What would you like to do now?", frame);
+                string que = await frame.RunConversationAsync();
+                Ask(que, dictionary, frame);
+                return;
+            }
+        }
+    }
+
     public static void BotSpeak(string text, GUI frame)
     {
         frame.Dispatcher.Invoke(() =>
@@ -254,7 +612,25 @@ internal class Program
             botMsg.Margin = new Thickness(10);
             botMsg.TextWrapping = TextWrapping.Wrap;
             frame.msgView.Children.Add(botMsg); //adds text block to stack panel
-            TextToSpeech.Speak(text);
+            Func<Task> speak = async () => await Task.Run(() => TextToSpeech.Speak(text));
+            speak();
         });
     }
+
+    public static void viewLog()
+    {
+        addLog("viewed log");
+        string l = "";
+        foreach (var (key,value) in log)
+        {
+            l += "time: " + key + "     Action:" + value.ToString();
+        }
+    }
+    public static void addLog(string action)
+    {
+        DateTime d = DateTime.Now;
+        log.Add(d, action);
+    }
+
+
 }

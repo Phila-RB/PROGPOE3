@@ -22,6 +22,7 @@ namespace Prog
     public partial class GUI : Window
     {
         public TaskCompletionSource<string> finTask;
+        public event Action<string> MsgSent;
         public GUI()
         {
             //starts window app
@@ -32,7 +33,7 @@ namespace Prog
         //sends message
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            finTask?.TrySetResult(msgs);//completes set task
+            finTask?.TrySetResult(msgBox.Text.ToLower());//completes set task
             if (string.IsNullOrEmpty(msgBox.Text))
             {
                 return;
@@ -45,38 +46,20 @@ namespace Prog
                 newMsg.Margin = new Thickness(10);
                 newMsg.Text = msgBox.Text;
                 msgView.Children.Add(newMsg);
+
+                MsgSent?.Invoke(msgBox.Text);
+
                 msgBox.Clear();
+
             }
 
-        }
-
-        public string msgs;
-        public string Msgs
-        {
-            //getter and setter
-            get { return msgs; }
-            set { msgs = value; }
-            
-        }
-        public Task AskAsync()
-        {
-            finTask = new TaskCompletionSource<string>();
-            return finTask.Task;
         }
 
         //async function to wait for msg answers
-        public async Task<String> RunConversationAsync()
+        public Task<String> RunConversationAsync()
         {
-            await AskAsync();
-
-            if (string.IsNullOrEmpty(msgs))
-            {
-                return "";
-            }
-            else
-            {
-                return msgs.ToLower();
-            }
+            finTask = new TaskCompletionSource<string>();
+            return finTask.Task;
         }
 
     }
