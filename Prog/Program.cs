@@ -178,7 +178,7 @@ internal class Program : MySqlClass
         frame.Loaded += async (sender, args) =>
         {
             ////play welcome audio and delay timer to not conflict audios
-
+            addLog("app started");
             await Task.Run(() =>
             {
                 welcome.PlaySync();
@@ -218,7 +218,16 @@ internal class Program : MySqlClass
         string[] rem = { "interested in", "i like" };
         string[] senti = { "worried", "frustrated", "scared" };
 
-        if(question.Contains("play") || question.Contains("game"))
+        if(question.Contains("view logs") || question.Contains("view log"))
+        {
+            viewLog();
+            BotSpeak("What would you like to do now?", frame);
+            string que = await frame.RunConversationAsync();
+            Ask(que, dictionary, frame);
+            return;
+        }
+
+        if (question.Contains("play") || question.Contains("game"))
         {
             await PlayGame(question, frame);
             return;
@@ -322,7 +331,6 @@ internal class Program : MySqlClass
 
         }
 
-
         //if quesiton is not valid go through series of if statements trying find/help user ask right questions
         if (!list.ContainsKey(question))
         {
@@ -414,12 +422,16 @@ internal class Program : MySqlClass
                 BotSpeak($"your score is {points}/12. That was great your the best =D, Dont forget threats are always advancing so dont stop here!!", frame);
             }
             addLog($"Ended new game with score of {points}/12");
+            BotSpeak("what would you like to do now?", frame);
+            string ques = await frame.RunConversationAsync();
+            Ask(ques, dictionary, frame);
+            return;
         }
     }
 
     private static async Task MySqlCrud(string question, GUI frame)
     {
-        if (question.Contains("view tasks"))
+        if (question.Contains("view tasks") || question.Contains("show tasks"))
         {
             addLog("tasks viewed");
             ShowTasks();
@@ -435,12 +447,12 @@ internal class Program : MySqlClass
                 viewFrame.Show(); //
             }
             viewFrame.Show();
-            BotSpeak("here is you tasks, what would you like to do now?",frame);
+            BotSpeak("here is your tasks, what would you like to do now?",frame);
             string que = await frame.RunConversationAsync();
             Ask(que, dictionary, frame);
             return;
         }
-        else if (question.Contains("add task"))
+        else if (question.Contains("add") || question.Contains("new") || question.Contains("add task"))
         {
             BotSpeak("What is the title?",frame);
             string title = await frame.RunConversationAsync();
@@ -484,7 +496,7 @@ internal class Program : MySqlClass
             Ask(que, dictionary, frame);
             return;
         }
-        else if(question.Equals("update task"))
+        else if(question.Equals("update task") || question.Contains("update"))
         {
             BotSpeak("Please enter the ID or the Title of the task you want to update", frame);
             var identify = await frame.RunConversationAsync();
@@ -531,7 +543,7 @@ internal class Program : MySqlClass
             Ask(que, dictionary, frame);
             return;
         }
-        else if(question.Equals("delete task"))
+        else if(question.Equals("delete task") || question.Contains("delete"))
         {
             BotSpeak("Please enter the ID or the Title of the task you want to delete", frame);
             string del = await frame.RunConversationAsync();
